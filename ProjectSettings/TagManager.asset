@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Collection
+  - Collection2
+  - EnemyFrog
+  - EnemyEagle
   layers:
   - Default
   - TransparentFX
