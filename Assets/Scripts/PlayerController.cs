@@ -9,15 +9,17 @@ public class PlayerController : MonoBehaviour
     private int Cherry, Diamond;
 
     private bool isHurt;
-
     public float speed;
     public float jumpforce;
     public LayerMask ground;
-    public Collider2D collider;
+    public Collider2D circelCollider;
+    public Collider2D cubeCollider;
+    public Transform ceilPoint;
 
     public UnityEngine.UI.Text CherryNumberLabel;
     public UnityEngine.UI.Text DiamondNumberLabel;
 
+    public AudioSource audio;
 
     // Start is called before the first frame update
     void Start()
@@ -41,28 +43,29 @@ public class PlayerController : MonoBehaviour
     }
     void Movement()
     {
-        float horizontalmove = Input.GetAxis("Horizontal");
+        float horizontalMove = Input.GetAxis("Horizontal");
         // 角色移动
-        if (horizontalmove != 0)
+        if (horizontalMove != 0)
         {
-            rb.velocity = new Vector2(horizontalmove * speed * Time.deltaTime, rb.velocity.y);
-            int direction = horizontalmove > 0 ? 1 : -1;
+            rb.velocity = new Vector2(horizontalMove * speed * Time.fixedDeltaTime, rb.velocity.y);
+            int direction = horizontalMove > 0 ? 1 : -1;
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * direction, transform.localScale.y, transform.localScale.z);
-            anim.SetFloat("running", Mathf.Abs(horizontalmove));
+            anim.SetFloat("running", Mathf.Abs(horizontalMove));
         }
         // 角色跳跃
-        if (Input.GetButtonDown("Jump") && collider.IsTouchingLayers(ground))
+        if (Input.GetKey(KeyCode.Space) && circelCollider.IsTouchingLayers(ground))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpforce * Time.deltaTime);
+            rb.velocity = new Vector2(rb.velocity.x, jumpforce * Time.fixedDeltaTime);
             anim.SetBool("jumping", true);
+            audio.Play();
         }
 
-        
+        Crouch();
     }
     void SwitchAnim()
     {
         anim.SetBool("idle", false);
-        if (rb.velocity.y < 0.1f && !collider.IsTouchingLayers(ground))
+        if (rb.velocity.y < 0.1f && !circelCollider.IsTouchingLayers(ground))
         {
             anim.SetBool("falling", true);
         }
@@ -85,7 +88,7 @@ public class PlayerController : MonoBehaviour
             }
             
         } 
-        else if (collider.IsTouchingLayers(ground))
+        else if (circelCollider.IsTouchingLayers(ground))
         {
             anim.SetBool("falling", false);
             anim.SetBool("idle", true);
@@ -114,7 +117,7 @@ public class PlayerController : MonoBehaviour
             if (anim.GetBool("falling"))
             {
                 Destroy(collision.gameObject);
-                rb.velocity = new Vector2(rb.velocity.x, jumpforce * Time.deltaTime);
+                rb.velocity = new Vector2(rb.velocity.x, jumpforce * Time.fixedDeltaTime);
                 anim.SetBool("jumping", true);
             }
             else
@@ -132,5 +135,21 @@ public class PlayerController : MonoBehaviour
             }
         }
         
+    }
+    // 人物趴下
+    public void Crouch()
+    {
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            anim.SetBool("crouching", true);
+            cubeCollider.enabled = false;
+        } else 
+        {
+            if (!Physics2D.OverlapCircle(ceilPoint.position, 0.2f, ground))
+            {
+                anim.SetBool("crouching", false);
+                cubeCollider.enabled = true;
+            }
+        }
     }
 }

@@ -5,14 +5,14 @@ using UnityEngine;
 public class EnemiesController : MonoBehaviour
 {
     private Rigidbody2D rb;
-    
+    private Collider2D collider;
     private Animator anim;
     private bool faceLeft;
     private bool faceTop;
     public Transform leftPoint, rightPoint;
     public Transform topPoint, bottomPoint;
     public LayerMask ground;
-    public Collider2D collider;
+   
 
     public float speed = 1.5f;
     public float jumpForce = 5;
@@ -24,7 +24,7 @@ public class EnemiesController : MonoBehaviour
         collider = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
 
-        faceLeft = true;//Random.value < 0.5;
+        faceLeft = Random.value < 0.5;
         faceTop = Random.value < 0.5;
 
         if (gameObject.tag == "EnemyFrog")
@@ -36,6 +36,7 @@ public class EnemiesController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        MovementEagle();
         SwitchAnim();
     }
     void Movement()
@@ -74,8 +75,11 @@ public class EnemiesController : MonoBehaviour
                 
             }            
             
-        }
-        else if (gameObject.tag == "EnemyEagle")
+        }        
+    }
+    void MovementEagle()
+    {
+        if (gameObject.tag == "EnemyEagle")
         {
             if (faceTop)
             {
@@ -97,17 +101,20 @@ public class EnemiesController : MonoBehaviour
     }
     void SwitchAnim()
     {
-        if (anim.GetBool("jumping"))
+        if (gameObject.tag == "EnemyFrog")
         {
-            if (rb.velocity.y < 0.1f)
+            if (anim.GetBool("jumping"))
             {
-                anim.SetBool("falling", true);
-                anim.SetBool("jumping", false);
+                if (rb.velocity.y < 0.1f)
+                {
+                    anim.SetBool("falling", true);
+                    anim.SetBool("jumping", false);
+                }
             }
-        }
-        if (collider.IsTouchingLayers(ground) && anim.GetBool("falling"))
-        {
-            anim.SetBool("falling", false);
+            if (collider.IsTouchingLayers(ground) && anim.GetBool("falling"))
+            {
+                anim.SetBool("falling", false);
+            }
         }
     }
 }
