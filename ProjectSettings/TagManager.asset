@@ -8,6 +8,8 @@ TagManager:
   - Collection2
   - EnemyFrog
   - EnemyEagle
+  - FrogTag
+  - DeadLine
   layers:
   - Default
   - TransparentFX

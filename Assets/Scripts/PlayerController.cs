@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
-    private int Cherry, Diamond;
+    private int cherry, Diamond;
 
     private bool isHurt;
     public float speed;
@@ -97,11 +98,16 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.gameObject.tag =="DeadLine")
+        {
+            Invoke(nameof(Restart), 2);
+            return;
+        }
         if (collision.gameObject.tag == "Collection")
         {
             Destroy(collision.gameObject);
-            Cherry += 1;
-            CherryNumberLabel.text = Cherry.ToString();
+            cherry += 1;
+            CherryNumberLabel.text = cherry.ToString();
         } else if (collision.gameObject.tag == "Collection2")
         {
             Destroy(collision.gameObject);
@@ -151,5 +157,9 @@ public class PlayerController : MonoBehaviour
                 cubeCollider.enabled = true;
             }
         }
+    }
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
